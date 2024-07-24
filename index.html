@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Fetch</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-custom {
+            background-color: #ff6f61;
+            color: #ffffff;
+        }
+
+        .btn-custom:hover {
+            background-color: #ff3d3d;
+        }
+
+        .select-custom {
+            background-color: #d0cbbd;
+        }
+
+        h1 {
+            color: #6f42c1;
+        }
+
+        #date-time {
+            color: #17a2b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h1 class="mb-4">Current Date and Time</h1>
+                <div class="form-group">
+                    <label for="timezone" class="font-weight-bold">Select a TimeZone:</label>
+                    <select class="form-control select-custom" name="timezone" id="timezone">
+                        <option value="America/New_York">America/New_York</option>
+                        <option value="Europe/London">Europe/London</option>
+                        <option value="Asia/Kolkata">Asia/Kolkata</option>
+                    </select>
+                </div>
+                <button class="btn btn-custom mt-3" onclick="displayDateTime()">DATE AND TIME</button>
+                <div id="date-time" class="mt-4 h4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        async function fetchDateTime(timezone) {
+            try {
+                console.log(`Fetching time for timezone: ${timezone}`); // Debugging statement
+                const response = await fetch(`http://worldtimeapi.org/api/timezone/${timezone}`);
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                const data = await response.json();
+                console.log(`Response data: ${JSON.stringify(data)}`); // Debugging statement
+                return data;
+            } catch (error) {
+                console.error('Error fetching date and time:', error);
+                throw error;
+            }
+        }
+
+        async function displayDateTime() {
+            try {
+                const timezone = document.getElementById('timezone').value;
+                console.log(`Selected timezone: ${timezone}`); // Debugging statement
+                const dateTimeData = await fetchDateTime(timezone);
+                const dateTimeElement = document.getElementById('date-time');
+                const formattedDateTime = new Date(dateTimeData.datetime).toLocaleString("en-US", { timeZone: timezone });
+                dateTimeElement.innerHTML = `Current date and time in ${timezone}: ${formattedDateTime}`;
+                console.log(`Displayed time: ${formattedDateTime}`); // Debugging statement
+            } catch (error) {
+                const dateTimeElement = document.getElementById('date-time');
+                dateTimeElement.innerHTML = `Error fetching date and time. Please try again later.`;
+            }
+        }
+    </script>
+</body>
+
+</html>
